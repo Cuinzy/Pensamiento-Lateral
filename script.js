@@ -344,14 +344,29 @@
     function drawDigit(di) {
       const g = groups[di];
       clear(g);
-      const ox = positions[di], oy = 70;
+      const ox = positions[di], oy = 70, w = DIGW, h = DIGH, hp = T;
+      // línea central de cada segmento, para una zona de toque amplia en móvil
+      const centers = {
+        a: [ox + hp, oy + T / 2, ox + w - hp, oy + T / 2],
+        d: [ox + hp, oy + h - T / 2, ox + w - hp, oy + h - T / 2],
+        g: [ox + hp, oy + h / 2, ox + w - hp, oy + h / 2],
+        b: [ox + w - T / 2, oy + hp, ox + w - T / 2, oy + h / 2],
+        c: [ox + w - T / 2, oy + h / 2, ox + w - T / 2, oy + h - hp],
+        f: [ox + T / 2, oy + hp, ox + T / 2, oy + h / 2],
+        e: [ox + T / 2, oy + h / 2, ox + T / 2, oy + h - hp],
+      };
       "abcdefg".split("").forEach((seg) => {
         const on = digits[di].on[seg];
         const cls = "seg " + (on ? "seg-on" : "seg-off") +
           (selected && selected.digit === di && selected.seg === seg ? " selected" : "");
-        const p = svg("polygon", { points: segRect(seg, ox, oy), class: cls });
-        p.addEventListener("click", () => onSegClick(di, seg));
-        g.appendChild(p);
+        // forma visible (no captura toques)
+        g.appendChild(svg("polygon", { points: segRect(seg, ox, oy), class: cls, "pointer-events": "none" }));
+        // zona de toque amplia e invisible
+        const cp = centers[seg];
+        const hit = svg("line", { x1: cp[0], y1: cp[1], x2: cp[2], y2: cp[3], stroke: "transparent",
+          "stroke-width": 34, "stroke-linecap": "round", class: "clickable" });
+        hit.addEventListener("click", () => onSegClick(di, seg));
+        g.appendChild(hit);
       });
     }
 
@@ -466,6 +481,7 @@
     function enableDrag(coin) {
       coin.circle.addEventListener("pointerdown", function (e) {
         e.preventDefault();
+        try { s.setPointerCapture(e.pointerId); } catch (_) {}
         const p = svgPoint(s, e);
         dragInfo = { coin: coin, from: coin.slot, offx: p.x - coin.slot.x, offy: p.y - coin.slot.y };
         coin.circle.classList.add("dragging");
@@ -824,8 +840,10 @@
         if (m.c == null) { x = pad + 20 + i * 44; y = trayY - 20; }
         else { x = cc(m.c); y = cc(m.r); }
         g.appendChild(svg("rect", { x: x - 24, y: y - 24, width: 48, height: 48, rx: 8, fill: "rgba(124,240,208,.12)", stroke: "var(--accent-2)", "stroke-width": 2 }));
-        const d = m.type === "/" ? "M" + (x - 16) + " " + (y + 16) + " L" + (x + 16) + " " + (y - 16) : "M" + (x - 16) + " " + (y - 16) + " L" + (x + 16) + " " + (y + 16);
-        g.appendChild(svg("line", { x1: d.split(" ")[1], y1: d.split(" ")[2], x2: d.split("L")[1].split(" ")[0], y2: d.split("L")[1].split(" ")[1], stroke: "var(--accent-2)", "stroke-width": 5, "stroke-linecap": "round" }));
+        let lx1, ly1, lx2, ly2;
+        if (m.type === "/") { lx1 = x - 16; ly1 = y + 16; lx2 = x + 16; ly2 = y - 16; }
+        else { lx1 = x - 16; ly1 = y - 16; lx2 = x + 16; ly2 = y + 16; }
+        g.appendChild(svg("line", { x1: lx1, y1: ly1, x2: lx2, y2: ly2, stroke: "var(--accent-2)", "stroke-width": 5, "stroke-linecap": "round" }));
         s.appendChild(g);
         mirrorEls.push(g);
         attachMirror(g, m);
@@ -836,14 +854,16 @@
     function attachMirror(g, m) {
       g.addEventListener("pointerdown", (e) => {
         e.preventDefault();
-        drag = { m: m, moved: false };
-        g.setPointerCapture && g.setPointerCapture(e.pointerId);
+        try { g.setPointerCapture(e.pointerId); } catch (_) {}
+        const p = svgPoint(s, e);
+        drag = { m: m, moved: false, sx: p.x, sy: p.y };
       });
       g.addEventListener("pointermove", (e) => {
         if (!drag || drag.m !== m) return;
-        drag.moved = true;
         const p = svgPoint(s, e);
-        // seguimiento visual simple: recoloca al soltar
+        // umbral: un toque pequeño cuenta como clic (girar), no como arrastre
+        if (Math.hypot(p.x - drag.sx, p.y - drag.sy) > 6) drag.moved = true;
+        if (drag.moved) g.setAttribute("transform", "translate(" + (p.x - drag.sx) + "," + (p.y - drag.sy) + ")");
       });
       g.addEventListener("pointerup", (e) => {
         if (!drag || drag.m !== m) return;
@@ -851,13 +871,14 @@
         const c = Math.floor((p.x - pad) / cell), r = Math.floor((p.y - pad) / cell);
         const inside = c >= 0 && c < N && r >= 0 && r < N;
         if (!drag.moved) {
-          // clic: girar
+          // toque: girar el espejo
           m.type = m.type === "/" ? "\\" : "/";
         } else if (inside && !isWall(c, r) && !(mirrorAt(c, r) && mirrorAt(c, r) !== m)) {
           m.c = c; m.r = r;
         } else if (!inside) {
           m.c = null; m.r = null; // devolver al almacén
         }
+        g.removeAttribute("transform");
         drag = null;
         drawMirrors();
         computeBeam();
@@ -1030,7 +1051,7 @@
     const tray = [];
     const trayY = gy + 3 * cell + 40;
     for (let i = 1; i <= 9; i++) {
-      tray.push({ val: i, x: gx + (i - 1) * ((3 * cell) / 9) + 16, y: trayY, placedCell: null });
+      tray.push({ val: i, x: 34 + (i - 1) * ((W - 68) / 8), y: trayY, placedCell: null });
     }
 
     const tileG = svg("g", {});
@@ -1057,6 +1078,7 @@
       const circle = g.querySelector("circle"), txt = g.querySelector("text");
       g.addEventListener("pointerdown", (e) => {
         e.preventDefault();
+        try { s.setPointerCapture(e.pointerId); } catch (_) {}
         const p = svgPoint(s, e);
         drag = { t: t, offx: p.x - +circle.getAttribute("cx"), offy: p.y - +circle.getAttribute("cy") };
         tileG.appendChild(g);
