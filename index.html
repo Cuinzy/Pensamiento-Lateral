@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laboratorio de Pensamiento Lateral</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===================== PANTALLA INICIAL ===================== -->
+    <section id="start-screen" class="screen active">
+      <div class="start-inner">
+        <div class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <circle class="lm-ring" cx="60" cy="60" r="46" />
+            <path class="lm-bulb" d="M60 32a22 22 0 0 0-13 39c3 2 4 5 4 8v3h18v-3c0-3 1-6 4-8a22 22 0 0 0-13-39z"/>
+            <line class="lm-line" x1="52" y1="90" x2="68" y2="90"/>
+            <line class="lm-line" x1="54" y1="96" x2="66" y2="96"/>
+          </svg>
+        </div>
+        <h1>Laboratorio de<br>Pensamiento Lateral</h1>
+        <p class="subtitle">11 desafíos para pensar diferente</p>
+        <button id="btn-start" class="btn btn-primary btn-lg">Comenzar</button>
+      </div>
+    </section>
+
+    <!-- ===================== PANTALLA DE DESAFÍOS ===================== -->
+    <section id="challenge-screen" class="screen">
+      <header class="ch-header">
+        <div class="ch-meta">
+          <span class="counter">Desafío <b id="ch-current">1</b> <span class="of">de</span> <span id="ch-total">11</span></span>
+          <span id="ch-solved-badge" class="solved-badge">✓ Resuelto</span>
+        </div>
+        <h2 id="ch-title"></h2>
+        <p id="ch-objective" class="objective"></p>
+      </header>
+
+      <div id="scene" class="scene"></div>
+
+      <nav class="controls">
+        <button id="btn-prev" class="btn">← Anterior</button>
+        <button id="btn-reset" class="btn btn-ghost">↻ Reiniciar</button>
+        <button id="btn-next" class="btn">Siguiente →</button>
+      </nav>
+
+      <div class="progress-dots" id="progress-dots"></div>
+    </section>
+
+    <!-- ===================== PANTALLA FINAL ===================== -->
+    <section id="final-screen" class="screen">
+      <div class="start-inner">
+        <div class="logo-mark done" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <circle class="lm-ring" cx="60" cy="60" r="46" />
+            <path class="lm-check" d="M40 62l14 14 28-32"/>
+          </svg>
+        </div>
+        <h1>Fin del laboratorio</h1>
+        <p class="subtitle" id="final-score">Desafíos resueltos: 0 de 10</p>
+        <button id="btn-restart" class="btn btn-primary btn-lg">Volver a comenzar</button>
+      </div>
+    </section>
+
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

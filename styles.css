@@ -1,0 +1,248 @@
+/* ============================================================
+   Laboratorio de Pensamiento Lateral
+   Tema oscuro, minimalista, responsivo
+   ============================================================ */
+
+:root {
+  --bg: #0c1018;
+  --bg-2: #121826;
+  --panel: #161d2e;
+  --panel-2: #1d2740;
+  --line: #2a3650;
+  --line-soft: #202a43;
+  --text: #e7ecf5;
+  --muted: #8a96ad;
+  --accent: #5aa9ff;
+  --accent-2: #7cf0d0;
+  --warn: #ffb454;
+  --good: #46d6a0;
+  --bad: #ff6b6b;
+  --wood: #d9a066;
+  --wood-dark: #b67c3c;
+  --coin: #ffd24a;
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  --radius: 16px;
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background:
+    radial-gradient(1100px 600px at 80% -10%, rgba(90, 169, 255, 0.10), transparent 60%),
+    radial-gradient(900px 500px at 0% 110%, rgba(124, 240, 208, 0.08), transparent 55%),
+    var(--bg);
+  min-height: 100vh;
+}
+
+#app {
+  max-width: 980px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 24px 20px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Pantallas ---------- */
+.screen { display: none; animation: fade 0.45s ease; flex: 1; flex-direction: column; }
+.screen.active { display: flex; }
+
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Inicio / Final ---------- */
+.start-inner {
+  margin: auto;
+  text-align: center;
+  max-width: 540px;
+  padding: 20px;
+}
+h1 {
+  font-size: clamp(1.9rem, 6vw, 3.1rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(120deg, #fff, var(--accent) 60%, var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.subtitle { color: var(--muted); font-size: clamp(1rem, 3vw, 1.25rem); margin-top: 14px; }
+
+.logo-mark { width: 150px; height: 150px; margin: 0 auto 22px; }
+.logo-mark svg { width: 100%; height: 100%; }
+.lm-ring { fill: none; stroke: var(--line); stroke-width: 3; }
+.lm-bulb { fill: none; stroke: var(--accent); stroke-width: 3.5; stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(90,169,255,.5)); animation: glow 2.6s ease-in-out infinite; }
+.lm-line { stroke: var(--muted); stroke-width: 3; stroke-linecap: round; }
+.lm-check { fill: none; stroke: var(--good); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(70,214,160,.5)); }
+.logo-mark.done .lm-ring { stroke: var(--good); }
+@keyframes glow { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
+
+/* ---------- Botones ---------- */
+.btn {
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 11px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform .12s ease, background .2s, border-color .2s, opacity .2s;
+  user-select: none;
+}
+.btn:hover:not(:disabled) { background: var(--panel-2); border-color: var(--accent); transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: .38; cursor: not-allowed; }
+.btn-primary {
+  background: linear-gradient(120deg, var(--accent), #3d7bd6);
+  border-color: transparent; color: #04121f;
+  font-weight: 700;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost { background: transparent; }
+.btn-lg { padding: 15px 34px; font-size: 1.1rem; margin-top: 30px; border-radius: 14px; }
+.btn-mini { padding: 7px 12px; font-size: .9rem; border-radius: 10px; }
+
+/* ---------- Cabecera de desafío ---------- */
+.ch-header { margin-bottom: 14px; }
+.ch-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.counter { color: var(--muted); font-size: .95rem; letter-spacing: .04em; text-transform: uppercase; }
+.counter b { color: var(--accent); font-size: 1.05rem; }
+.counter .of { opacity: .6; }
+#ch-title { font-size: clamp(1.3rem, 4vw, 1.9rem); margin: 6px 0 4px; font-weight: 750; }
+.objective { color: var(--muted); font-size: 1.02rem; max-width: 64ch; }
+
+.solved-badge {
+  display: none;
+  background: rgba(70, 214, 160, .14);
+  color: var(--good);
+  border: 1px solid rgba(70, 214, 160, .4);
+  padding: 3px 11px; border-radius: 999px; font-size: .82rem; font-weight: 700;
+}
+.solved-badge.show { display: inline-block; animation: pop .4s ease; }
+@keyframes pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+
+/* ---------- Escena ---------- */
+.scene {
+  position: relative;
+  flex: 1;
+  min-height: 420px;
+  background:
+    linear-gradient(180deg, var(--bg-2), var(--panel));
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.scene.solved { border-color: rgba(70, 214, 160, .55); box-shadow: 0 0 0 1px rgba(70,214,160,.3), var(--shadow); }
+
+.scene-svg { width: 100%; height: 100%; max-height: 520px; touch-action: none; }
+.scene-svg:focus { outline: none; }
+
+/* Mensaje de éxito dentro de la escena */
+.success-flag {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0; transition: opacity .4s;
+}
+.success-flag.show { opacity: 1; }
+.success-flag .chip {
+  background: rgba(70, 214, 160, .16);
+  border: 1px solid rgba(70, 214, 160, .5);
+  color: var(--good); font-weight: 800; font-size: 1.1rem;
+  padding: 10px 22px; border-radius: 999px; backdrop-filter: blur(4px);
+  animation: pop .45s ease;
+}
+
+/* Barra de herramientas / estado dentro de cada escena */
+.toolbar {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center;
+  margin-top: 14px;
+}
+.status-pill {
+  font-size: .9rem; color: var(--muted);
+  background: var(--panel-2); border: 1px solid var(--line);
+  padding: 6px 13px; border-radius: 999px;
+}
+.status-pill b { color: var(--text); }
+
+/* ---------- Controles de navegación ---------- */
+.controls {
+  display: flex; gap: 12px; justify-content: space-between; align-items: center;
+  margin-top: 18px;
+}
+.controls .btn { flex: 1; max-width: 220px; }
+#btn-reset { flex: 0 0 auto; }
+
+/* ---------- Puntos de progreso ---------- */
+.progress-dots { display: flex; gap: 8px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+.pdot {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--line); border: none; cursor: pointer; padding: 0;
+  transition: transform .15s, background .2s;
+}
+.pdot:hover { transform: scale(1.25); }
+.pdot.current { background: var(--accent); box-shadow: 0 0 0 3px rgba(90,169,255,.2); }
+.pdot.solved { background: var(--good); }
+.pdot.current.solved { background: var(--good); box-shadow: 0 0 0 3px rgba(70,214,160,.25); }
+
+/* ============================================================
+   Elementos reutilizables de los desafíos
+   ============================================================ */
+
+/* Monedas / fichas genéricas */
+.coin-piece {
+  fill: var(--coin); stroke: #a8821f; stroke-width: 2; cursor: grab;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,.4));
+}
+.coin-piece.dragging { cursor: grabbing; }
+
+/* Ranuras / slots */
+.slot { fill: rgba(255,255,255,.03); stroke: var(--line); stroke-width: 2; stroke-dasharray: 5 5; }
+.slot.hover { stroke: var(--accent); fill: rgba(90,169,255,.08); }
+
+/* Cerillas (matchsticks de siete segmentos) */
+.seg { cursor: pointer; transition: opacity .15s; }
+.seg-on { fill: var(--wood); stroke: var(--wood-dark); stroke-width: 1.5; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+.seg-off { fill: rgba(255,255,255,.04); stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 3 3; }
+.seg-on.selected { fill: var(--accent); stroke: #2f6fb0; }
+.seg-tip { fill: #c23b2b; }
+.op-sign { fill: var(--text); font-weight: 800; }
+
+/* Interruptores / luces genéricas */
+.clickable { cursor: pointer; }
+
+/* Botones de operación en línea (jarras, etc.) */
+.op-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 360px; margin-top: 12px; }
+.op-grid .btn { max-width: none; }
+
+/* Mensaje de error suave (no es pista, solo feedback de intento) */
+.soft-msg { color: var(--warn); font-size: .92rem; min-height: 1.2em; text-align: center; margin-top: 10px; }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 620px) {
+  #app { padding: 16px 12px 28px; }
+  .scene { min-height: 340px; padding: 12px; }
+  .controls { gap: 8px; }
+  .controls .btn { padding: 10px 8px; font-size: .92rem; }
+  #btn-reset span.lbl { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
